@@ -37,7 +37,7 @@ googleNearby: {
 
 
 Screen from Sample page:
-![Screenshot](./screenshot.png)
+![Screenshot](https://github.com/aspetkov/cmv-widgets/blob/master/screenshot.PNG)
 
 Zoom to object:
 ![Screenshot](https://github.com/aspetkov/cmv-widgets/blob/master/zoomto.PNG)  
