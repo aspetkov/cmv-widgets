@@ -40,7 +40,7 @@ Screen from Sample page:
 ![Screenshot](./screenshot.png)
 
 Zoom to object:
-![Screenshot](./zoomto.png)  
+![Screenshot](https://github.com/aspetkov/cmv-widgets/blob/master/zoomto.PNG)  
 
 if you add and StreetView widget, then remove  
 'gis/plugins/async!//maps.google.com/maps/api/js?v=3&sensor=false'  
