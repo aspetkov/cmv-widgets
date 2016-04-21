@@ -154,7 +154,7 @@ define([
               }
             },
             geocoder: {
-                include: false,
+                include: true,
                 id: 'geocoder',
                 type: 'domNode',
                 path: 'gis/dijit/Geocoder',
@@ -206,7 +206,7 @@ define([
                 }
             },
             scalebar: {
-                include: false,
+                include: true,
                 id: 'scalebar',
                 type: 'map',
                 path: 'esri/dijit/Scalebar',
@@ -236,7 +236,7 @@ define([
                 }
             },
             overviewMap: {
-                include: false,
+                include: true,
                 id: 'overviewMap',
                 type: 'map',
                 path: 'esri/dijit/OverviewMap',
@@ -270,7 +270,7 @@ define([
                 }
             },
             legend: {
-                include: false,
+                include: true,
                 id: 'legend',
                 type: 'titlePane',
                 path: 'esri/dijit/Legend',
@@ -283,7 +283,7 @@ define([
                 }
             },
             layerControl: {
-                include: false,
+                include: true,
                 id: 'layerControl',
                 type: 'titlePane',
                 path: 'gis/dijit/LayerControl',
