@@ -35,6 +35,10 @@ googleNearby: {
 
 ```
 
+### Query string from Google database:  
+**distance** AND **name** AND **keyword** AND **type**
+
+The results from query is up to 200 objects.
 
 Screen from Sample page:
 ![Screenshot](https://github.com/aspetkov/cmv-widgets/blob/master/screenshot.PNG)
