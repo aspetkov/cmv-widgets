@@ -2,7 +2,35 @@
 
 
 
-Use by adding the following to viewer.js config file.
+
+In index.html  
+dojoConfig must add last two rows for dgrid and dstore
+
+```
+        var dojoConfig = {
+            async: true, 
+            packages: [{
+                name: 'viewer',
+                location: location.pathname.replace(/[^\/]+$/, '') + 'js/viewer'
+            },{
+                name: 'config',
+                location: location.pathname.replace(/[^\/]+$/, '') + 'js/config'
+            },{
+                name: 'gis',
+                location: location.pathname.replace(/[^\/]+$/, '') + 'js/gis'
+            }, {
+              name: 'dgrid',
+              location: '//cdn.rawgit.com/SitePen/dgrid/v0.4.0'
+            }, {
+              name: 'dstore',
+              location: '//cdn.rawgit.com/SitePen/dstore/v1.0.1'
+            }]
+        };
+
+```
+
+
+Adding the following to viewer.js config file.
 
 javascript  
 ```
