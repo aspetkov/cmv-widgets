@@ -38,6 +38,11 @@ googleNearby: {
 ### Query string from Google database:  
 **distance** AND **name** AND **keyword** AND **type**
 
+**distance** - distance from the objects to the point in straight line (in meters)  
+**name** - search only in name of objects  
+**keyword** - search in any text related to the objects  
+**type** - select from Google list  
+
 The results from query is up to 200 objects.
 
 Screen from Sample page:
