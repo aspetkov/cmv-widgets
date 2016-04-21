@@ -41,10 +41,10 @@ googleNearby: {
 The results from query is up to 200 objects.
 
 Screen from Sample page:
-![Screenshot](https://github.com/aspetkov/cmv-widgets/blob/master/screenshot.PNG)
+![Screenshot](https://github.com/aspetkov/cmv-widgets/blob/master/GoogleNearby/screenshot.PNG)
 
 Zoom to object:
-![Screenshot](https://github.com/aspetkov/cmv-widgets/blob/master/zoomto.PNG)  
+![Screenshot](https://github.com/aspetkov/cmv-widgets/blob/master/GoogleNearby/zoomto.PNG)  
 
 If you add and StreetView widget, then remove  
 'gis/plugins/async!//maps.google.com/maps/api/js?v=3&sensor=false'  
