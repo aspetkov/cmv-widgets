@@ -1,8 +1,13 @@
 # Google nearby widget
 
 
+#### [Try The Demo](http://aspetkov.github.io/)  
 
+  
 
+  
+
+####Settings
 In index.html  
 dojoConfig must add last two rows for dgrid and dstore
 
