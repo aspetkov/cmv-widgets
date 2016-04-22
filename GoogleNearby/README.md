@@ -72,9 +72,9 @@ googleNearby: {
 **distance** AND **name** AND **keyword** AND **type**
 
 **distance** - distance from the objects to the point in straight line (in meters)  
-**name** - search only in name of objects  
+**name** - search only in the name of the objects  
 **keyword** - search in any text related to the objects  
-**type** - select from Google list  
+**type** - select from Google's list  
 
 The results from query is up to 200 objects.
 
