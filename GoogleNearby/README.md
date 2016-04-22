@@ -80,8 +80,13 @@ Zoom to object:
 ![Screenshot](https://github.com/aspetkov/cmv-widgets/blob/master/GoogleNearby/zoomto.PNG)  
 
 If you add and StreetView widget, then remove  
-'gis/plugins/async!//maps.google.com/maps/api/js?v=3&sensor=false'  
-from streetview.js.
+'gis/plugins/async!//maps.google.com/maps/api/js?v=3&sensor=false' and   
+'gis/plugins/async!//maps.googleapis.com/maps/api/js?libraries=drawing,places&sensor=false"'
+from streetview.js and GoogleNearby.js   
+
+and add  
+'gis/plugins/async!//maps.googleapis.com/maps/api/js?libraries=drawing,places&sensor=false"'
+to viewer.js config file.  
 Because Google API can load only one time.
 
 Using:  
