@@ -2,7 +2,7 @@
 
 Widgets created for [cmv/cmv-app](https://github.com/cmv/cmv-app).
 
-[See them live!]()
+[See them live!](http://aspetkov.github.io/)
 
 ## Widgets
 
