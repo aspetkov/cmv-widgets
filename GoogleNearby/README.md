@@ -24,10 +24,10 @@ dojoConfig must add last two rows for dgrid and dstore
                 name: 'gis',
                 location: location.pathname.replace(/[^\/]+$/, '') + 'js/gis'
             }, {
-              name: 'dgrid',
+              name: 'dgridnew',
               location: '//cdn.rawgit.com/SitePen/dgrid/v0.4.0'
             }, {
-              name: 'dstore',
+              name: 'dstorenew',
               location: '//cdn.rawgit.com/SitePen/dstore/v1.0.1'
             }]
         };

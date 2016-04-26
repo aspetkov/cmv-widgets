@@ -40,13 +40,13 @@ define([
     'dojo/on',
     'dojo/Deferred',
 
-    'dstore/Trackable',
-    'dgrid/extensions/DijitRegistry',
-    'dstore/Memory',
+    'dstorenew/Trackable',
+    'dgridnew/extensions/DijitRegistry',
+    'dstorenew/Memory',
 
-    'dgrid/OnDemandGrid',
-    'dgrid/Selection',
-    'dgrid/Keyboard',
+    'dgridnew/OnDemandGrid',
+    'dgridnew/Selection',
+    'dgridnew/Keyboard',
 
     'dijit/Dialog',
 
