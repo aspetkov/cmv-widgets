@@ -65,22 +65,23 @@ define([
     'dijit/form/NumberTextBox',
     'dijit/form/Select',
     'dojox/form/CheckedMultiSelect',
+    './JS2Shapefile',
 
     'dojo/NodeList-dom',
     'gis/plugins/async!//maps.googleapis.com/maps/api/js?libraries=drawing,places&sensor=false"'
 
-], function(
+], function (
     declare, lang, array, topic, Color, domConstruct,
     put,
     _WidgetBase, _TemplatedMixin, _WidgetsInTemplateMixin,
     _SelectionLayersMixin,
-    esriConfig, Graphic, 
+    esriConfig, Graphic,
     FeatureLayer,
     GeometryService, DistanceParameters,
-    Draw, 
+    Draw,
     SimpleFillSymbol, PictureMarkerSymbol, TextSymbol, LabelClass,
     Point, Circle, Polygon, Polyline, webMercatorUtils,
-    on, Deferred, 
+    on, Deferred,
     Trackable, DijitRegistry, Memory,
     OnDemandGrid, Selection, Keyboard,
     Dialog, win, proj4,
@@ -120,11 +121,11 @@ define([
             'train_station', 'travel_agency', 'university', 'veterinary_care', 'zoo'
         ],
 
-        postCreate: function() {
+        postCreate: function () {
             this.inherited(arguments);
             this.nearbyMode = 'distance';
-            this.gridPosition = 'floating'; 
-            this.gridNode = put('div'); 
+            this.gridPosition = 'floating';
+            this.gridNode = put('div');
 
             this.createFeatureLayer();
 
@@ -141,14 +142,14 @@ define([
 
         },
 
-        initUI: function() {
+        initUI: function () {
             this.initDrawTool();
             this.setupConnections();
             this.populatePlaceTypeSelect();
         },
 
-        populatePlaceTypeSelect: function() {
-            var options = array.map(this.placeTypes, function(placeType) {
+        populatePlaceTypeSelect: function () {
+            var options = array.map(this.placeTypes, function (placeType) {
                 return {
                     value: placeType,
                     label: placeType
@@ -158,34 +159,35 @@ define([
             this.nearbyPlaceTypeSelect.addOption(options);
         },
 
-        initDrawTool: function() {
+        initDrawTool: function () {
             this.drawTool = new Draw(this.map);
         },
 
-        setupConnections: function() {
+        setupConnections: function () {
             this.map.graphics.on('click', lang.hitch(this, 'preventMapGraphicsClickStop'));
             this.SearchButton.on('click', lang.hitch(this, 'updateNearby'));
             this.dropPointButton.on('click', lang.hitch(this, 'activateMapPointDrop'));
             this.clearDropButton.on('click', lang.hitch(this, 'clearResults'));
+            this.exportShapeButton.on('click', lang.hitch(this, 'exportShapefile'));
             this.drawTool.on('draw-complete', lang.hitch(this, 'handleDrawEnd'));
         },
 
-        preventMapGraphicsClickStop: function(evt) {
+        preventMapGraphicsClickStop: function (evt) {
             evt.preventDefault();
             evt.stopPropagation();
             delete evt.graphic; //remove the reference to the graphic so it can be identified
             this.map.emit('click', evt);
         },
 
-        disconnectMapClick: function() {
+        disconnectMapClick: function () {
             topic.publish('mapClickMode/setCurrent', 'draw');
         },
 
-        connectMapClick: function() {
+        connectMapClick: function () {
             topic.publish('mapClickMode/setDefault');
         },
 
-        activateMapPointDrop: function() {
+        activateMapPointDrop: function () {
             this.disconnectMapClick();
             this.clearResults();
             this.dropPointButton.set('label', 'Waiting for point drop');
@@ -193,7 +195,7 @@ define([
             this.drawTool.activate(Draw.POINT);
         },
 
-        handleDrawEnd: function(evt) {
+        handleDrawEnd: function (evt) {
             this.connectMapClick();
             this.droppedPoint = evt;
             this.drawTool.deactivate();
@@ -206,7 +208,7 @@ define([
             this.doNearbyAnalysis();
         },
 
-        showPoint: function(geometry) {
+        showPoint: function (geometry) {
             this.clearMapPointDrop();
             var point = new Point(geometry.toJson());
             var pictureMarkerSymbol = new PictureMarkerSymbol(this.getPointSymbolInfo());
@@ -215,7 +217,7 @@ define([
             this.map.graphics.add(this.pointGraphic);
         },
 
-        getPointSymbolInfo: function() {
+        getPointSymbolInfo: function () {
             return {
                 'type': 'esriPMS',
                 'url': '',
@@ -228,7 +230,7 @@ define([
             };
         },
 
-        getPolygonSymbolInfo: function() {
+        getPolygonSymbolInfo: function () {
             return {
                 'type': 'esriSFS',
                 'style': 'esriSFSSolid',
@@ -242,7 +244,7 @@ define([
             };
         },
 
-        clearMapPointDrop: function() {
+        clearMapPointDrop: function () {
             if (this.pointGraphic) {
                 this.map.graphics.remove(this.pointGraphic);
                 this.pointGraphic = null;
@@ -250,13 +252,13 @@ define([
             }
         },
 
-        clearFeatureLayer: function() {
+        clearFeatureLayer: function () {
             if (this.pointFeatures) {
                 this.pointFeatures.clear();
             }
         },
 
-        clearNearbyArea: function() {
+        clearNearbyArea: function () {
             if (this.nearbyAreaGraphic) {
                 this.map.graphics.remove(this.nearbyAreaGraphic);
                 this.nearbyAreaGraphic = null;
@@ -264,7 +266,7 @@ define([
             }
         },
 
-        updateNearby: function() {
+        updateNearby: function () {
             this.clearFeatureLayer();
             this.clearResultsGrid();
 
@@ -273,7 +275,7 @@ define([
             }
         },
 
-        doNearbyAnalysis: function() {
+        doNearbyAnalysis: function () {
             // get a geodesic circle
             this.nearbyArea = null;
             // what is the distance radius value?
@@ -281,14 +283,14 @@ define([
                 center: this.pointGraphic.geometry,
                 geodesic: true,
                 radius: this.nearbyValueInput.get('value'),
-                radiusUnit: 'esriMeters' 
+                radiusUnit: 'esriMeters'
             });
             this.selectNearbyFeatures();
             this.nearbyResultsNode.innerHTML = '';
         },
 
 
-        selectNearbyFeatures: function() {
+        selectNearbyFeatures: function () {
             var place, placeTypes = [];
             var that = this;
             place = this.convertToGoogleCoordinates(this.nearbyArea.center);
@@ -309,7 +311,7 @@ define([
             this.getDetailsResults = [];
             this.selectionResults = [];
 
-            this.placesService.radarSearch(nearbyPlacesRequest, function(resultsRadarSearch, status) {
+            this.placesService.radarSearch(nearbyPlacesRequest, function (resultsRadarSearch, status) {
                 if (status !== google.maps.places.PlacesServiceStatus.OK) {
                     console.error(status);
                     var myDialog = new Dialog({
@@ -325,13 +327,13 @@ define([
 
                 if (that.radarSearchResults && that.radarSearchResults.length > 0) {
 
-                    var results = array.map(that.radarSearchResults, lang.hitch(that, function(resultRadarSearch, index) {
+                    var results = array.map(that.radarSearchResults, lang.hitch(that, function (resultRadarSearch, index) {
                         var def = new Deferred();
                         this.theNext(resultRadarSearch, index, def);
                         return def.promise;
                     }));
 
-                    that.settle(results).then(function(results) {
+                    that.settle(results).then(function (results) {
                         console.log('settle number ' + results.length);
                     });
                 }
@@ -339,13 +341,13 @@ define([
         },
 
 
-        settle: function(promises) {
+        settle: function (promises) {
             var d = new Deferred();
             var countdownLatch = promises.length;
             var results = [];
             var that = this;
-            promises.forEach(function(p, i) {
-                p.then(function(v) {
+            promises.forEach(function (p, i) {
+                p.then(function (v) {
                     var row = that.pinpointResult(v);
                     that.selectionResults.push(row);
                     that.createGoogleGrid(row);
@@ -354,7 +356,7 @@ define([
                     if (countdownLatch === 0) {
                         d.resolve(results);
                     }
-                }, function(err) {
+                }, function (err) {
                     results[i] = { state: 'rejected', err: err };
                     countdownLatch--;
                     if (countdownLatch === 0) {
@@ -362,17 +364,17 @@ define([
                     }
                 });
             });
-            return d; 
+            return d;
         },
 
-        theNext: function(resultRadarSearch, index, def) {
+        theNext: function (resultRadarSearch, index, def) {
             this.resultRadarSearch = resultRadarSearch;
             var delay = 2;
             var requestDetails = {
                 placeId: resultRadarSearch.place_id
             };
             var that = this;
-            this.placesService.getDetails(requestDetails, function(result, status) {
+            this.placesService.getDetails(requestDetails, function (result, status) {
 
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                     that.getDetailsResults.push(result);
@@ -387,7 +389,7 @@ define([
                     if (status == google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT) {
                         delay++;
 
-                        setTimeout(function() {
+                        setTimeout(function () {
                             that.theNext(resultRadarSearch, index, def);
                         }, delay);
                     } else {
@@ -400,7 +402,7 @@ define([
         },
 
 
-        pinpointResult: function(result) {
+        pinpointResult: function (result) {
             var point = new Point(result.geometry.location.lng(), result.geometry.location.lat());
 
             var attr = lang.mixin({}, {
@@ -418,21 +420,21 @@ define([
         },
 
 
-        updateNearbyFeatures: function() {
+        updateNearbyFeatures: function () {
             if (this.nearbyArea) {
                 this.selectNearbyFeatures();
             }
         },
 
-        showNearbyArea: function() {
+        showNearbyArea: function () {
             this.clearNearbyArea();
             var nearbyAreaSymbol = new SimpleFillSymbol(this.getPolygonSymbolInfo());
             this.nearbyAreaGraphic = new Graphic(this.nearbyArea, nearbyAreaSymbol);
             this.map.graphics.add(this.nearbyAreaGraphic);
         },
 
-        createGoogleGrid: function(row) {
-            this.addDistanceToResult(row).then(lang.hitch(this, function(rowWithDistance) {
+        createGoogleGrid: function (row) {
+            this.addDistanceToResult(row).then(lang.hitch(this, function (rowWithDistance) {
 
                 if (!this.resultsStore) {
                     var TrackableMemory = declare([Memory, Trackable]);
@@ -461,7 +463,7 @@ define([
                         x: posX > 0 ? posX : 0,
                         y: posY > 0 ? posY : 0
                     };
-                    this.gridDialog.focus = function() {}; // kill the default focus function
+                    this.gridDialog.focus = function () { }; // kill the default focus function
                     // include a dock button on the modal
                     this.dockButton = put(this.gridDialog.closeButtonNode, '+span.dockButton');
                     on(this.dockButton, 'click', lang.hitch(this, 'dockResultsGrid'));
@@ -475,16 +477,16 @@ define([
 
                 var columnInfo = this.getColumnInfo(rowWithDistance);
                 if (!this.resultsGrid) {
-                    this.resultsGrid = new(declare([OnDemandGrid, DijitRegistry, Keyboard, Selection]))({
+                    this.resultsGrid = new (declare([OnDemandGrid, DijitRegistry, Keyboard, Selection]))({
                         selectionMode: 'single',
                         cellNavigation: false,
                         showHeader: true,
                         collection: this.resultsStore,
                         columns: columnInfo,
                         sort: [{
-                                attribute: '__distance',
-                                descending: false
-                            }]
+                            attribute: '__distance',
+                            descending: false
+                        }]
                     }, this.gridNode);
                     this.resultsGrid.startup();
                     this.resultsGrid.on('.dgrid-cell:click', lang.hitch(this, 'selectFeature'));
@@ -508,7 +510,7 @@ define([
             }));
         },
 
-        changeGridPosition: function() {
+        changeGridPosition: function () {
             if (this.gridPosition === 'floating') {
                 this.gridDialog.show();
             } else if (this.gridPosition === 'docked') {
@@ -528,10 +530,10 @@ define([
             this.resultsGrid.refresh();
         },
 
-        addDistanceToResult: function(result) {
+        addDistanceToResult: function (result) {
             var df = new Deferred();
             var dp = new DistanceParameters();
-            var selectedUnit = 'esriMeters'; 
+            var selectedUnit = 'esriMeters';
             dp.distanceUnit = GeometryService['UNIT_' + selectedUnit];
             dp.geodesic = true;
             dp.geometry1 = result.geometry;
@@ -547,7 +549,7 @@ define([
             this.geometryService.distance(dp).then(lang.hitch(this, 'distanceSuccess', df, result), lang.hitch(this, 'distanceFailure', df, result));
             return df;
         },
-        distanceSuccess: function(df, result, distanceResult) {
+        distanceSuccess: function (df, result, distanceResult) {
             df.resolve(
                 lang.mixin({}, {
                     '__distance': parseFloat(distanceResult.toFixed(3)),
@@ -555,7 +557,7 @@ define([
                 }, result.attributes)
             );
         },
-        distanceFailure: function(df, result) {
+        distanceFailure: function (df, result) {
             df.resolve(
                 lang.mixin({}, {
                     '__distance': 0.0,
@@ -564,17 +566,17 @@ define([
             );
         },
 
-        dockResultsGrid: function() {
+        dockResultsGrid: function () {
             this.gridPosition = 'docked';
             this.changeGridPosition();
         },
 
-        undockResultsGrid: function() {
+        undockResultsGrid: function () {
             this.gridPosition = 'floating';
             this.changeGridPosition();
         },
 
-        getColumnInfo: function(result) {
+        getColumnInfo: function (result) {
             var columnInfo = {};
             for (var columnName in result) {
                 if (result.hasOwnProperty(columnName)) {
@@ -596,25 +598,25 @@ define([
             return columnInfo;
         },
 
-        addIcon: function(url) {
+        addIcon: function (url) {
             return '<img src="' + url + '" height="42" width="42">';
         },
 
         // from http://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
-        numberWithCommas: function(value) {
+        numberWithCommas: function (value) {
             var parts = value.toString().split('.');
             parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
             return parts.join('.');
         },
 
-        selectFeature: function(evt) {
+        selectFeature: function (evt) {
             var row = this.resultsGrid.row(evt);
 
             // zoom to feature
             if (row) {
                 var data = row.data;
                 if (data) {
-                    var selected = array.filter(this.selectionResults, function(selectionResult) {
+                    var selected = array.filter(this.selectionResults, function (selectionResult) {
                         if (selectionResult.attributes.id === data.id) {
                             return true;
                         }
@@ -637,7 +639,7 @@ define([
             }
         },
 
-        clearResults: function() {
+        clearResults: function () {
             this.results = null;
             this.nearbyArea = null;
             this.clearFeatureLayer();
@@ -648,7 +650,7 @@ define([
             this.dropPointButton.set('label', 'Ready to drop point!');
         },
 
-        clearResultsGrid: function() {
+        clearResultsGrid: function () {
             if (this.resultsStore) {
                 this.resultsStore.setData([]);
             }
@@ -661,7 +663,7 @@ define([
             }
         },
 
-        convertToGoogleCoordinates: function(mapRightClickPoint) {
+        convertToGoogleCoordinates: function (mapRightClickPoint) {
             var mapPoint = mapRightClickPoint;
             if (!mapPoint) {
                 return;
@@ -689,7 +691,7 @@ define([
             }
         },
 
-        createFeatureLayer: function() {
+        createFeatureLayer: function () {
             var featureCollection = {
                 'layerDefinition': null,
                 'featureSet': {
@@ -770,6 +772,18 @@ define([
             this.pointFeatures.setLabelingInfo([this.labelClass]);
 
             this.map.addLayer(this.pointFeatures);
+
+        },
+
+        exportShapefile: function () {
+
+            // for longitude and latitude
+            var coordSystem = 'GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
+
+            if (this.selectionResults.length > 0) {
+                window.JS2Shapefile.createShapeFiles(this.selectionResults, 'UTF8', coordSystem);
+                return;
+            }
 
         }
     });
