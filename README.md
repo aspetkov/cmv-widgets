@@ -10,7 +10,4 @@ Widgets created for [cmv/cmv-app](https://github.com/cmv/cmv-app).
 | :----: | ----------- |
 | [GoogleNearby](https://github.com/aspetkov/cmv-widgets/tree/master/GoogleNearby) | Discover objects within a radius of a map click location from Google. |
 
-| JS Library | Description |
-| :----: | ----------- |
-| [JS2Shapefile](https://github.com/aspetkov/cmv-widgets/tree/master/JS2Shapefile) | Writes a shapefile in the client in pure javascript. |
 

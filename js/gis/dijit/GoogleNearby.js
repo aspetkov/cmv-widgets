@@ -65,7 +65,6 @@ define([
     'dijit/form/NumberTextBox',
     'dijit/form/Select',
     'dojox/form/CheckedMultiSelect',
-    './JS2Shapefile',
 
     'dojo/NodeList-dom',
     'gis/plugins/async!//maps.googleapis.com/maps/api/js?libraries=drawing,places&sensor=false"'
@@ -168,7 +167,6 @@ define([
             this.SearchButton.on('click', lang.hitch(this, 'updateNearby'));
             this.dropPointButton.on('click', lang.hitch(this, 'activateMapPointDrop'));
             this.clearDropButton.on('click', lang.hitch(this, 'clearResults'));
-            this.exportShapeButton.on('click', lang.hitch(this, 'exportShapefile'));
             this.drawTool.on('draw-complete', lang.hitch(this, 'handleDrawEnd'));
         },
 
@@ -773,18 +771,7 @@ define([
 
             this.map.addLayer(this.pointFeatures);
 
-        },
-
-        exportShapefile: function () {
-
-            // for longitude and latitude
-            var coordSystem = 'GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
-
-            if (this.selectionResults.length > 0) {
-                window.JS2Shapefile.createShapeFiles(this.selectionResults, 'UTF8', coordSystem);
-                return;
-            }
-
         }
+
     });
 });
