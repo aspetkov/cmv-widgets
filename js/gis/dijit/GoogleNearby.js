@@ -275,14 +275,41 @@ define([
             }
         },
 
+        convertRadiusInMeters: function (radius, unit) {
+            var radiusInMeters;
+            switch (unit) {
+                case 'METERS':
+                    radiusInMeters=radius;
+                    break;
+
+                case 'FEETS':
+                    radiusInMeters = 0.3048*radius;
+                    break;
+
+                case 'MILES':
+                    radiusInMeters = 1609.34 * radius;
+                    break;
+
+                case 'KILOMETERS':
+                    radiusInMeters = 1000 * radius;
+                    break;
+
+                default:
+                    throw new Error('Unknown unit type');
+            }
+            return radiusInMeters;
+        },
+
         doNearbyAnalysis: function () {
+
+            var radiusInMeters = this.convertRadiusInMeters(this.nearbyValueInput.get('value'), this.nearbyModeDistance_options.get('value'));
             // get a geodesic circle
             this.nearbyArea = null;
             // what is the distance radius value?
             this.nearbyArea = new Circle({
                 center: this.pointGraphic.geometry,
                 geodesic: true,
-                radius: this.nearbyValueInput.get('value'),
+                radius: radiusInMeters,
                 radiusUnit: 'esriMeters'
             });
             this.selectNearbyFeatures();

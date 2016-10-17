@@ -4,7 +4,15 @@
         <div class="padTop">
             <div>
               <input type="text" class="nearbyValueInput" id="nearbyValueInput" data-dojo-attach-point="nearbyValueInput" data-dojo-type="dijit/form/NumberTextBox" value="500" name="nearbyValueInput" data-dojo-props="constraints:{min:0,max:9999},invalidMessage:'Please enter a numeric value.'" />
-              <label for="nearbyValueInput">(m) - Enter Distance (straight line)</label>
+                <span data-dojo-attach-point="nearbyModeDistanceSpan">
+                    <select data-dojo-type="dijit/form/Select" data-dojo-attach-point="nearbyModeDistance_options">
+                        <option selected="selected" value="METERS">meters</option>
+                        <option value="FEETS">feets</option>
+                        <option value="MILES">miles</option>
+                        <option value="KILOMETERS">km</option>
+                    </select>
+                </span>
+              <label for="nearbyValueInput"> Distance (straight line)</label>
             </div>
             <div>
               <input type="text" class="nearbyNameInput" id="nearbyNameInput" data-dojo-attach-point="nearbyNameInput" data-dojo-type="dijit/form/TextBox" value="pizza" name="nearbyNameInput" />
@@ -23,6 +31,7 @@
             <button data-dojo-attach-point="dropPointButton" class="dropButton padTop" data-dojo-type="dijit/form/Button">Ready to drop point!</button>
             <button data-dojo-attach-point="SearchButton" class="dropButton padTop" data-dojo-type="dijit/form/Button">SEARCH</button>
             <button data-dojo-attach-point="clearDropButton" class="off padTop" data-dojo-type="dijit/form/Button">Clear dropped point</button>
+            <button data-dojo-attach-point="exportShapeButton" data-dojo-type="dijit/form/Button">Export to shapefile</button>
         </div>
     </div>
     <div data-dojo-attach-point="nearbyResultsNode" class="resultsContainer"></div>
