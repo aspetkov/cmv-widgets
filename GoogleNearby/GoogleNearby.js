@@ -65,7 +65,7 @@ define([
     'dijit/form/NumberTextBox',
     'dijit/form/Select',
     'dojox/form/CheckedMultiSelect',
-    './JS2Shapefile',
+    './GoogleNearby/JS2Shapefile',
 
     'dojo/NodeList-dom',
     'gis/plugins/async!//maps.googleapis.com/maps/api/js?libraries=drawing,places&sensor=false"'
@@ -300,6 +300,31 @@ define([
             return radiusInMeters;
         },
 
+        convertDistanceFromMetersInUnit: function (distanceInMeters, unit) {
+            var distanceInUnit;
+            switch (unit) {
+                case 'METERS':
+                    distanceInUnit = distanceInMeters;
+                    break;
+
+                case 'FEETS':
+                    distanceInUnit = distanceInMeters / 0.3048;
+                    break;
+
+                case 'MILES':
+                    distanceInUnit = distanceInMeters / 1609.34;
+                    break;
+
+                case 'KILOMETERS':
+                    distanceInUnit = distanceInMeters / 1000;
+                    break;
+
+                default:
+                    throw new Error('Unknown unit type');
+            }
+            return distanceInUnit.toFixed(4);
+        },
+
         doNearbyAnalysis: function () {
 
             var radiusInMeters = this.convertRadiusInMeters(this.nearbyValueInput.get('value'), this.nearbyModeDistance_options.get('value'));
@@ -437,7 +462,7 @@ define([
                 'id': result.id,
                 'name': result.name,
                 'vicinity': result.vicinity,
-                'geometryLngLat': parseFloat(result.geometry.location.lng()).toFixed(3) + ' / ' + parseFloat(result.geometry.location.lat()).toFixed(3),
+                'geometryLngLat': parseFloat(result.geometry.location.lng()).toFixed(4) + ' / ' + parseFloat(result.geometry.location.lat()).toFixed(4),
                 'types': result.types.join(', ')
             });
 
@@ -579,7 +604,7 @@ define([
         distanceSuccess: function (df, result, distanceResult) {
             df.resolve(
                 lang.mixin({}, {
-                    '__distance': parseFloat(distanceResult.toFixed(3)),
+                    '__distance': this.convertDistanceFromMetersInUnit(parseFloat(distanceResult.toFixed(3)), this.nearbyModeDistance_options.get('value')),
                     'id': result.id
                 }, result.attributes)
             );
@@ -609,7 +634,7 @@ define([
                 if (result.hasOwnProperty(columnName)) {
                     if (columnName === '__distance') {
                         columnInfo.__distance = {
-                            label: 'Distance (m)',
+                            label: 'Distance ('+ this.nearbyModeDistance_options.get('value') + ')',
                             formatter: lang.hitch(this, 'numberWithCommas')
                         };
                     } else if (columnName === 'icon') {
