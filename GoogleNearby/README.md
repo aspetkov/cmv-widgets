@@ -9,7 +9,7 @@
 
 ####Settings
 In index.html  
-dojoConfig must add last two rows for dgrid and dstore
+dojoConfig must add last 3 rows for dgrid, dstore and jszip
 
 ```
         var dojoConfig = {
@@ -29,7 +29,12 @@ dojoConfig must add last two rows for dgrid and dstore
             }, {
               name: 'dstorenew',
               location: '//cdn.rawgit.com/SitePen/dstore/v1.0.1'
-            }]
+            }, {
+              name: 'jszip',
+              location: '//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/',
+              main: "jszip"
+            }
+            ]
         };
 
 ```
@@ -93,6 +98,12 @@ and add
 'gis/plugins/async!//maps.googleapis.com/maps/api/js?libraries=drawing,places&sensor=false"'
 to viewer.js config file.  
 Because Google API can load only one time.
+
+Writes a shapefile in pure javascript with [JS2Shapefile](https://github.com/aspetkov/cmv-widgets/tree/master/JS2Shapefile).
+
+Download a shapefile as zip with jszip library [jszip:](http://stuartk.com/jszip).
+
+Requires a capable modern browser with Typed Arrays. 
 
 Using:  
 https://github.com/BrianBunker/cmv-widgets/tree/master//Nearby  

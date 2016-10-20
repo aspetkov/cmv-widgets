@@ -48,6 +48,8 @@ define([
     'dgridnew/Selection',
     'dgridnew/Keyboard',
 
+    'jszip',
+
     'dijit/Dialog',
 
     'dojo/window',
@@ -83,7 +85,7 @@ define([
     Point, Circle, Polygon, Polyline, webMercatorUtils,
     on, Deferred,
     Trackable, DijitRegistry, Memory,
-    OnDemandGrid, Selection, Keyboard,
+    OnDemandGrid, Selection, Keyboard, JSZip,
     Dialog, win, proj4,
     template
 ) {
@@ -827,16 +829,66 @@ define([
 
         },
 
+        //from https://github.com/tmcgee/cmv-widgets/blob/master/widgets/Export.js
+        downloadFile: function (content, mimeType, fileName, useBlob) {
+
+            mimeType = mimeType || 'application/octet-stream';
+            var url;
+            var dataURI = 'data:' + mimeType + ',' + content;
+            var link = document.createElement('a');
+            var blob = new Blob([content], {
+                'type': mimeType
+            });
+
+            // feature detection
+            if (typeof (link.download) !== 'undefined') {
+                // Browsers that support HTML5 download attribute
+                if (useBlob) {
+                    url = window.URL.createObjectURL(blob);
+                } else {
+                    url = dataURI;
+                }
+                link.setAttribute('href', url);
+                link.setAttribute('download', fileName);
+                link.style = 'visibility:hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                return null;
+
+                //feature detection using IE10+ routine
+            } else if (navigator.msSaveOrOpenBlob) {
+                return navigator.msSaveOrOpenBlob(blob, fileName);
+            }
+
+            // catch all. for which browsers?
+            window.open(dataURI);
+            window.focus();
+            return null;
+        },
+
         exportShapefile: function () {
 
             // for longitude and latitude
             var coordSystem = 'GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
+            var zip = new JSZip();
 
             if (this.selectionResults.length > 0) {
-                window.JS2Shapefile.createShapeFiles(this.selectionResults, 'UTF8', coordSystem);
-                return;
-            }
+                var outputObject = window.JS2Shapefile.createShapeFiles(this.selectionResults, 'UTF8', coordSystem);
 
+                for (var createdFile in outputObject) {
+                    if (outputObject[createdFile]['successful']) {
+                        for (var fileInShape in outputObject[createdFile]['shapefile']) {
+                            zip.file(outputObject[createdFile]['shapefile'][fileInShape]['name'], outputObject[createdFile]['shapefile'][fileInShape]['blob']);
+                        }
+                    }
+                }
+                var that = this;
+                zip.generateAsync({ type: "arraybuffer" })
+                    .then(function (arraybuffer) {
+                        that.downloadFile(arraybuffer, 'application/zip', 'GoogleNearbyShapefile.zip', true);
+                    });
+            }
         }
 
     });

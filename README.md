@@ -8,7 +8,7 @@ Widgets created for [cmv/cmv-app](https://github.com/cmv/cmv-app).
 
 | Widget | Description |
 | :----: | ----------- |
-| [GoogleNearby](https://github.com/aspetkov/cmv-widgets/tree/master/GoogleNearby) | Discover objects within a radius of a map click location from Google. |
+| [GoogleNearby](https://github.com/aspetkov/cmv-widgets/tree/master/GoogleNearby) | Discover objects within a radius of a map click location from Google. Download a objects as shapefile as zip with jszip library.|
 
 | JS Library | Description |
 | :----: | ----------- |
