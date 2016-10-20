@@ -211,14 +211,20 @@
                     throw new Error('Unknown geometry type');
             }
         }
-        getShapefile('POINT', pointgraphics);
-        getShapefile('POLYLINE', polylinegraphics);
-        getShapefile('POLYGON', polygongraphics);
+        var points = getShapefile('POINT', pointgraphics);
+        var polylines = getShapefile('POLYLINE', polylinegraphics);
+        var polygons = getShapefile('POLYGON', polygongraphics);
+
+        return {
+            pointShapefile: points,
+            polylineShapefile: polylines,
+            polygonShapefile: polygons
+        };
     };
 
-
-    var getShapefile = function(shapetype, arrayToUse){
-        if (typeof(shapetype) === 'undefined' && !(shapetype === 'POINT' || shapetype === 'POLYLINE' || shapetype === 'POLYGON')) {
+    var getShapefile = function (shapetype, arrayToUse) {
+        var shapefile = {};
+        if (typeof (shapetype) === 'undefined' && !(shapetype === 'POINT' || shapetype === 'POLYLINE' || shapetype === 'POLYGON')) {
             return {
                 successful: false,
                 message: 'Unknown or unspecified shapefile type requested'
@@ -230,62 +236,38 @@
                 message: 'No graphics of type ' + shapetype + ' have been added!'
             };
         }
-        var resultObject = createShapeShxFile(shapetype,arrayToUse);
+        var resultObject = createShapeShxFile(shapetype, arrayToUse);
         var attributeMap = createAttributeMap(arrayToUse);
         resultObject.dbf = createDbf(attributeMap, arrayToUse);
 
-        downloadFile(resultObject.shape, 'application/octet-stream', shapetype + 'fileName.shp', true);
-        downloadFile(resultObject.shx, 'application/octet-stream', shapetype + 'fileName.shx', true);
-        downloadFile(resultObject.dbf, 'application/octet-stream', shapetype + 'fileName.dbf', true);
+        shapefile.shp = {};
+        shapefile.shp.blob = new Blob([resultObject.shape], { 'type': 'application/octet-stream' });
+        shapefile.shp.name = shapetype + 'fileName.shp';
+        shapefile.shx = {};
+        shapefile.shx.blob = new Blob([resultObject.shx], { 'type': 'application/octet-stream' });
+        shapefile.shx.name = shapetype + 'fileName.shx';
+        shapefile.dbf = {};
+        shapefile.dbf.blob = new Blob([resultObject.dbf], { 'type': 'application/octet-stream' });
+        shapefile.dbf.name = shapetype + 'fileName.dbf';
 
         //this file is for ArcGIS Desktop for  UTF-8 encoding
-        if (dbfEncoded=='UTF8'){
-            downloadFile(['65001'], 'plain/text', shapetype + 'fileName.cpg', true);
+        if (dbfEncoded == 'UTF8') {
+            shapefile.cpg = {};
+            shapefile.cpg.blob = new Blob(['65001'], { 'type': 'plain/text' });
+            shapefile.cpg.name = shapetype + 'fileName.cpg';
         }
 
         if (coordSystem) {
-            downloadFile([coordSystem], 'plain/text', shapetype + 'fileName.prj', true);
-        }
-    };
-
-    //from https://github.com/tmcgee/cmv-widgets/blob/master/widgets/Export.js
-    var downloadFile = function (content, mimeType, fileName, useBlob) {
-
-        mimeType = mimeType || 'application/octet-stream';
-        var url;
-        var dataURI = 'data:' + mimeType + ',' + content;
-        var link = document.createElement('a');
-        var blob = new Blob([content], {
-            'type': mimeType
-        });
-
-        // feature detection
-        if (typeof (link.download) !== 'undefined') {
-            // Browsers that support HTML5 download attribute
-            if (useBlob) {
-                url = window.URL.createObjectURL(blob);
-            } else {
-                url = dataURI;
-            }
-            link.setAttribute('href', url);
-            link.setAttribute('download', fileName);
-            link.style = 'visibility:hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            return null;
-
-            //feature detection using IE10+ routine
-        } else if (navigator.msSaveOrOpenBlob) {
-            return navigator.msSaveOrOpenBlob(blob, fileName);
+            shapefile.prj = {};
+            shapefile.prj.blob = new Blob([coordSystem], { 'type': 'plain/text' });
+            shapefile.prj.name = shapetype + 'fileName.prj';
         }
 
-        // catch all. for which browsers?
-        window.open(dataURI);
-        window.focus();
-        return null;
+        return {
+            successful: true,
+            shapefile: shapefile
+        };
     };
-
 
     var createShapeShxFile = function(shapetype, graphics){
         var lengthShapeShxFile = getLengthShapeShxFile(shapetype, graphics);
