@@ -365,7 +365,7 @@ define([
             this.getDetailsResults = [];
             this.selectionResults = [];
 
-            this.placesService.radarSearch(nearbyPlacesRequest, function (resultsRadarSearch, status) {
+            this.placesService.nearbySearch(nearbyPlacesRequest, function (resultsRadarSearch, status) {
                 if (status !== google.maps.places.PlacesServiceStatus.OK) {
                     console.error(status);
                     var myDialog = new Dialog({
